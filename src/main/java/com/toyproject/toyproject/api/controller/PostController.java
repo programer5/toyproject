@@ -1,7 +1,9 @@
 package com.toyproject.toyproject.api.controller;
 
 import com.toyproject.toyproject.api.request.PostCreate;
+import com.toyproject.toyproject.api.service.PostService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -16,10 +18,14 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class PostController {
 
+    private final PostService postService;
+
     @PostMapping("/posts")
-    public Map<String, String> post(@RequestBody @Valid PostCreate params) throws Exception {
+    public Map<String, String> post(@RequestBody @Valid PostCreate request) throws Exception {
+        postService.write(request);
         return Map.of();
     }
 }
