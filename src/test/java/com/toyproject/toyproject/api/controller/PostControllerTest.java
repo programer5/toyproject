@@ -1,7 +1,9 @@
 package com.toyproject.toyproject.api.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.toyproject.toyproject.api.domain.Post;
 import com.toyproject.toyproject.api.repository.PostRepository;
+import com.toyproject.toyproject.api.request.PostCreate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +30,9 @@ class PostControllerTest {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @BeforeEach
     void clean() {
         postRepository.deleteAll();
@@ -36,23 +41,37 @@ class PostControllerTest {
     @Test
     @DisplayName("/post 요청 시 Hello World를 출력한다")
     void test() throws Exception {
+
+        PostCreate postCreate = PostCreate.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .build();
+
+        String json = objectMapper.writeValueAsString(postCreate);
+
         // expected
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\": \"제목입니다.\", \"content\": \"내용입니다.\"}")
+                        .content(json)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("{}"))
+                .andExpect(MockMvcResultMatchers.content().string(""))
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
     @DisplayName("/post 요청 시 title값은 필수다.")
     void test2() throws Exception {
+
+        PostCreate postCreate = PostCreate.builder()
+                .content("내용입니다.")
+                .build();
+
+        String json = objectMapper.writeValueAsString(postCreate);
         // expected
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\": null, \"content\": \"내용입니다.\"}")
+                        .content(json)
                 )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("400"))
@@ -64,10 +83,17 @@ class PostControllerTest {
     @Test
     @DisplayName("/posts 요청 시 DB에 값이 저장된다.")
     void test3() throws Exception {
+
+        PostCreate postCreate = PostCreate.builder()
+                .title("제목입니다")
+                .content("내용입니다")
+                .build();
+
+        String json = objectMapper.writeValueAsString(postCreate);
         // expected
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\": \"제목입니다\", \"content\": \"내용입니다\"}")
+                        .content(json)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
