@@ -3,6 +3,7 @@ package com.toyproject.toyproject.api.service;
 import com.toyproject.toyproject.api.domain.Post;
 import com.toyproject.toyproject.api.repository.PostRepository;
 import com.toyproject.toyproject.api.request.PostCreate;
+import com.toyproject.toyproject.api.response.PostResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -56,11 +57,11 @@ class PostServiceTest {
                 .build();
         postRepository.save(post);
         // when
-        Post post1 = postService.get(post.getId());
+        PostResponse postResponse = postService.get(post.getId());
         // then
-        Assertions.assertNotNull(post1);
-        Assertions.assertEquals("제목입니다.", post.getTitle());
-        Assertions.assertEquals("내용입니다.", post.getContent());
+        Assertions.assertNotNull(postResponse);
+        Assertions.assertEquals("제목입니다.", postResponse.getTitle());
+        Assertions.assertEquals("내용입니다.", postResponse.getContent());
     }
 
 }

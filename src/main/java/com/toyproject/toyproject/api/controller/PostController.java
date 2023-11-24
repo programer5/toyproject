@@ -2,6 +2,7 @@ package com.toyproject.toyproject.api.controller;
 
 import com.toyproject.toyproject.api.domain.Post;
 import com.toyproject.toyproject.api.request.PostCreate;
+import com.toyproject.toyproject.api.response.PostResponse;
 import com.toyproject.toyproject.api.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +28,8 @@ public class PostController {
     }
 
     @GetMapping("/posts/{postId}")
-    public Post get(@PathVariable(name = "postId") Long id) {
-        Post post = postService.get(id);
-        return post;
+    public PostResponse get(@PathVariable(name = "postId") Long id) {
+        PostResponse postResponse = postService.get(id);
+        return postResponse;
     }
 }
