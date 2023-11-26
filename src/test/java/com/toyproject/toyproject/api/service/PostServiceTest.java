@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
 
 @SpringBootTest
 class PostServiceTest {
@@ -62,6 +62,28 @@ class PostServiceTest {
         Assertions.assertNotNull(postResponse);
         Assertions.assertEquals("제목입니다.", postResponse.getTitle());
         Assertions.assertEquals("내용입니다.", postResponse.getContent());
+    }
+
+    @Test
+    @DisplayName("글 여러개 조회")
+    void test3() {
+        // given
+        Post post1 = Post.builder()
+                .title("제목입니다1.")
+                .content("내용입니다1.")
+                .build();
+        postRepository.save(post1);
+
+        Post post2 = Post.builder()
+                .title("제목입니다2.")
+                .content("내용입니다2.")
+                .build();
+        postRepository.save(post2);
+        // when
+        List<PostResponse> posts = postService.getList();
+        // then
+        Assertions.assertEquals(2L, posts.size());
+
     }
 
 }

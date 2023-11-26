@@ -1,25 +1,22 @@
 package com.toyproject.toyproject.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
 import com.toyproject.toyproject.api.domain.Post;
 import com.toyproject.toyproject.api.repository.PostRepository;
 import com.toyproject.toyproject.api.request.PostCreate;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -123,6 +120,34 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(post.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("제목입니다."))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content").value("내용입니다."))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("글 여러개 조회")
+    void test5() throws Exception {
+        Post post1 = Post.builder()
+                .title("제목입니다1.")
+                .content("내용입니다1.")
+                .build();
+
+        postRepository.save(post1);
+
+        Post post2 = Post.builder()
+                .title("제목입니다2.")
+                .content("내용입니다2.")
+                .build();
+
+        postRepository.save(post2);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()", Matchers.is(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(post1.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("제목입니다1."))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("내용입니다1."))
                 .andDo(MockMvcResultHandlers.print());
     }
 
