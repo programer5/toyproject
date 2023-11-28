@@ -140,11 +140,35 @@ class PostControllerTest {
 
         postRepository.saveAll(requestPosts);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/posts?page=1&sort=id,desc")
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts?page=1&size=10")
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.length()", Matchers.is(5)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()", Matchers.is(10)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(30))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("호돌맨 제목 30"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("반포자이 30"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("페이지를 0으로 요청하면 첫 페이지를 가져온다.")
+    void test6() throws Exception {
+
+        List<Post> requestPosts = IntStream.range(1, 31)
+                .mapToObj(i -> Post.builder()
+                        .title("호돌맨 제목 " + i)
+                        .content("반포자이 " + i)
+                        .build())
+                .collect(Collectors.toList());
+
+        postRepository.saveAll(requestPosts);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts?page=0&size=10")
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()", Matchers.is(10)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(30))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("호돌맨 제목 30"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("반포자이 30"))
