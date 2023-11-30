@@ -1,6 +1,7 @@
 package com.toyproject.toyproject.api.controller;
 
 import com.toyproject.toyproject.api.request.PostCreate;
+import com.toyproject.toyproject.api.request.PostEdit;
 import com.toyproject.toyproject.api.request.PostSearch;
 import com.toyproject.toyproject.api.response.PostResponse;
 import com.toyproject.toyproject.api.service.PostService;
@@ -31,5 +32,10 @@ public class PostController {
     @GetMapping("/posts")
     public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
         return postService.getList(postSearch);
+    }
+
+    @PatchMapping("/posts/{postId}")
+    public PostResponse edit(@PathVariable Long postId, @RequestBody @Valid PostEdit postEdit) {
+        return postService.edit(postId, postEdit);
     }
 }

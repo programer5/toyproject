@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.toyproject.toyproject.api.domain.Post;
 import com.toyproject.toyproject.api.repository.PostRepository;
 import com.toyproject.toyproject.api.request.PostCreate;
+import com.toyproject.toyproject.api.request.PostEdit;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -172,6 +173,30 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(30))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("호돌맨 제목 30"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("반포자이 30"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("글 제목 수정.")
+    void test7() throws Exception {
+
+        Post post = Post.builder()
+                .title("호돌맨")
+                .content("반포자이")
+                .build();
+
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("호돌걸")
+                .content("반포자이")
+                .build();
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/posts/{postId}", post.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postEdit))
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
     }
 

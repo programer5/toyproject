@@ -3,6 +3,7 @@ package com.toyproject.toyproject.api.service;
 import com.toyproject.toyproject.api.domain.Post;
 import com.toyproject.toyproject.api.repository.PostRepository;
 import com.toyproject.toyproject.api.request.PostCreate;
+import com.toyproject.toyproject.api.request.PostEdit;
 import com.toyproject.toyproject.api.request.PostSearch;
 import com.toyproject.toyproject.api.response.PostResponse;
 import org.junit.jupiter.api.Assertions;
@@ -94,4 +95,48 @@ class PostServiceTest {
 
     }
 
+    @Test
+    @DisplayName("글 제목 수정")
+    void test4() {
+        // given
+        Post post = Post.builder()
+                .title("호돌맨")
+                .content("반포자이")
+                .build();
+
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("호돌걸")
+                .build();
+
+        postService.edit(post.getId(), postEdit);
+
+        Post changedPost = postRepository.findById(post.getId()).orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id=" + post.getId()));
+
+        Assertions.assertEquals("호돌걸", changedPost.getTitle());
+    }
+
+    @Test
+    @DisplayName("글 내용 수정")
+    void test5() {
+        // given
+        Post post = Post.builder()
+                .title("호돌맨")
+                .content("반포자이")
+                .build();
+
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("호돌맨")
+                .content("초가집")
+                .build();
+
+        postService.edit(post.getId(), postEdit);
+
+        Post changedPost = postRepository.findById(post.getId()).orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id=" + post.getId()));
+
+        Assertions.assertEquals("초가집", changedPost.getContent());
+    }
 }
