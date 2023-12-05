@@ -1,7 +1,6 @@
 package com.toyproject.toyproject.api.service;
 
 import com.toyproject.toyproject.api.domain.Post;
-import com.toyproject.toyproject.api.domain.PostEditor;
 import com.toyproject.toyproject.api.repository.PostRepository;
 import com.toyproject.toyproject.api.request.PostCreate;
 import com.toyproject.toyproject.api.request.PostEdit;
@@ -44,17 +43,18 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponse edit(Long id, PostEdit postEdit) {
+    public void edit(Long id, PostEdit postEdit) {
         Post post = postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존자하지 않는 글입니다."));
 
-        PostEditor.PostEditorBuilder postEditorBuilder = post.toEditor();
+        post.edit(postEdit.getTitle(), postEdit.getContent());
 
-        PostEditor postEditor = postEditorBuilder.title(postEdit.getTitle())
-                .content(postEdit.getContent())
-                .build();
+    }
 
-        post.edit(postEditor);
+    @Transactional
+    public void delete(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
 
-        return new PostResponse(post);
+        postRepository.delete(post);
     }
 }
