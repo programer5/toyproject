@@ -1,6 +1,7 @@
 package com.toyproject.toyproject.api.service;
 
 import com.toyproject.toyproject.api.domain.Post;
+import com.toyproject.toyproject.api.exception.PostNotFound;
 import com.toyproject.toyproject.api.repository.PostRepository;
 import com.toyproject.toyproject.api.request.PostCreate;
 import com.toyproject.toyproject.api.request.PostEdit;
@@ -160,7 +161,7 @@ class PostServiceTest {
 
         Post changedPost = postRepository.findById(post.getId()).orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id=" + post.getId()));
 
-        Assertions.assertEquals("호돌맨", changedPost.getTitle());
+        Assertions.assertEquals(null, changedPost.getTitle());
         Assertions.assertEquals("초가집", changedPost.getContent());
     }
 
@@ -178,5 +179,57 @@ class PostServiceTest {
         postService.delete(post.getId());
 
         Assertions.assertEquals(0, postRepository.count());
+    }
+
+    @Test
+    @DisplayName("글 1개 조회")
+    void test8() {
+        // given
+        Post post = Post.builder()
+                .title("호돌맨")
+                .content("반포자이")
+                .build();
+        postRepository.save(post);
+
+        // when
+        PostNotFound e = Assertions.assertThrows(PostNotFound.class, () -> postService.get(post.getId() + 1L));
+
+        // then
+        Assertions.assertEquals("존재하지 않는 글입니다.", e.getMessage());
+
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 - 존재하지 않는 글")
+    void test9() {
+        // given
+        Post post = Post.builder()
+                .title("호돌맨")
+                .content("반포자이")
+                .build();
+
+        postRepository.save(post);
+
+        Assertions.assertThrows(PostNotFound.class, () -> postService.get(post.getId() + 1L));
+    }
+
+    @Test
+    @DisplayName("글 내용 수정 - 존재하지 않는 글입니다.")
+    void test10() {
+        // given
+        Post post = Post.builder()
+                .title("호돌맨")
+                .content("반포자이")
+                .build();
+
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title(null)
+                .content("초가집")
+                .build();
+
+        Assertions.assertThrows(PostNotFound.class, () -> postService.get(post.getId() + 1L));
+
     }
 }
