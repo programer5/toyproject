@@ -60,6 +60,7 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(""))
                 .andDo(MockMvcResultHandlers.print());
+        postRepository.deleteAll();
     }
 
     @Test
@@ -77,10 +78,11 @@ class PostControllerTest {
                         .content(json)
                 )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("400"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("404"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("잘못된 요청입니다."))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.validation.title").value("타이틀을 입력해주세요."))
                 .andDo(MockMvcResultHandlers.print());
+        postRepository.deleteAll();
     }
 
     @Test
@@ -106,6 +108,7 @@ class PostControllerTest {
         Post post = postRepository.findAll().get(0);
         Assertions.assertEquals("제목입니다", post.getTitle());
         Assertions.assertEquals("내용입니다", post.getContent());
+        postRepository.deleteAll();
     }
 
     @Test
@@ -126,6 +129,7 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("제목입니다."))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content").value("내용입니다."))
                 .andDo(MockMvcResultHandlers.print());
+        postRepository.deleteAll();
     }
 
     @Test
@@ -198,6 +202,7 @@ class PostControllerTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
+        postRepository.deleteAll();
     }
 
     @Test
@@ -216,6 +221,53 @@ class PostControllerTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
+        postRepository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 조회")
+    void test9() throws Exception{
+        mockMvc.perform(MockMvcRequestBuilders.delete("/posts/{postId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 수정")
+    void test10() throws Exception{
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("호돌걸")
+                .content("반포자이")
+                .build();
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/posts/{postId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postEdit))
+                )
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+        postRepository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("게시글 작성시 제목에 '바보'는 포함될 수 없다.")
+    void test11() throws Exception{
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("나는 바보입니다.")
+                .content("반포자이")
+                .build();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postEdit))
+                )
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andDo(MockMvcResultHandlers.print());
+        postRepository.deleteAll();
     }
 
 }

@@ -1,32 +1,28 @@
 package com.toyproject.toyproject.api.controller;
 
 
+import com.toyproject.toyproject.api.exception.HodologException;
 import com.toyproject.toyproject.api.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
 @RestControllerAdvice
 public class ExceptionController {
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ErrorResponse methodArgumentNotValidException(MethodArgumentNotValidException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("400")
-                .message("잘못된 요청입니다.")
+    @ExceptionHandler(HodologException.class)
+    public ResponseEntity<ErrorResponse> hodologException(HodologException e) {
+
+        int statusCode = e.getStatusCode();
+
+        ErrorResponse response = ErrorResponse.builder()
+                .code(String.valueOf(statusCode))
+                .message(e.getMessage())
+                .validation(e.getValidation())
                 .build();
 
-        for (FieldError fieldError : e.getFieldErrors()) {
-            errorResponse.addValidation(fieldError.getField(), fieldError.getDefaultMessage());
-        }
-
-        return errorResponse;
+        return ResponseEntity.status(statusCode).body(response);
     }
 }
