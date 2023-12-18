@@ -1,6 +1,7 @@
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.1.5'
+	id "org.asciidoctor.jvm.convert" version "3.3.2"
 	id 'io.spring.dependency-management' version '1.1.3'
 }
 
@@ -15,10 +16,15 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+	asciidoctorExt
 }
 
 repositories {
 	mavenCentral()
+}
+
+ext {
+	snippetsDir = file('build/generated-snippets')
 }
 
 dependencies {
@@ -36,6 +42,9 @@ dependencies {
 	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
 tasks.named('bootBuildImage') {
@@ -44,6 +53,7 @@ tasks.named('bootBuildImage') {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	outputs.dir snippetsDir
 }
 
 def querydslDir = "src/main/generated"
@@ -58,4 +68,20 @@ tasks.withType(JavaCompile).configureEach {
 
 clean.doLast {
 	file(querydslDir).deleteDir()
+}
+
+asciidoctor {
+	inputs.dir snippetsDir
+	configurations 'asciidoctorExt'
+	dependsOn test
+}
+
+bootJar {
+	dependsOn asciidoctor
+
+	copy {
+		from asciidoctor.outputDir
+		into "src/main/resources/static/docs"
+	}
+
 }
