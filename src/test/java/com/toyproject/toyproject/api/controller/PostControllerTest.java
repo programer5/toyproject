@@ -58,27 +58,7 @@ class PostControllerTest {
         postRepository.deleteAll();
     }
 
-//    @Test
-//    @DisplayName("/post 요청 시 title값은 필수다.")
-//    void test2() throws Exception {
-//
-//        PostCreate postCreate = PostCreate.builder()
-//                .content("내용입니다.")
-//                .build();
-//
-//        String json = objectMapper.writeValueAsString(postCreate);
-//        // expected
-//        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(json)
-//                )
-//                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("404"))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("잘못된 요청입니다."))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.validation.title").value("타이틀을 입력해주세요."))
-//                .andDo(MockMvcResultHandlers.print());
-//        postRepository.deleteAll();
-//    }
+
 
     @Test
     @DisplayName("/posts 요청 시 DB에 값이 저장된다.")
@@ -92,6 +72,7 @@ class PostControllerTest {
         String json = objectMapper.writeValueAsString(postCreate);
         // expected
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+                        .header("authorization", "hodolman")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                 )
@@ -126,54 +107,6 @@ class PostControllerTest {
                 .andDo(MockMvcResultHandlers.print());
         postRepository.deleteAll();
     }
-
-//    @Test
-//    @DisplayName("글 여러개 조회")
-//    void test5() throws Exception {
-//
-//        List<Post> requestPosts = IntStream.range(1, 31)
-//                .mapToObj(i -> Post.builder()
-//                        .title("호돌맨 제목 " + i)
-//                        .content("반포자이 " + i)
-//                        .build())
-//                .collect(Collectors.toList());
-//
-//        postRepository.saveAll(requestPosts);
-//
-//        mockMvc.perform(MockMvcRequestBuilders.get("/posts?page=1&size=10")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                )
-//                .andExpect(MockMvcResultMatchers.status().isOk())
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.length()", Matchers.is(10)))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(30))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("호돌맨 제목 30"))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("반포자이 30"))
-//                .andDo(MockMvcResultHandlers.print());
-//    }
-
-//    @Test
-//    @DisplayName("페이지를 0으로 요청하면 첫 페이지를 가져온다.")
-//    void test6() throws Exception {
-//
-//        List<Post> requestPosts = IntStream.range(1, 31)
-//                .mapToObj(i -> Post.builder()
-//                        .title("호돌맨 제목 " + i)
-//                        .content("반포자이 " + i)
-//                        .build())
-//                .collect(Collectors.toList());
-//
-//        postRepository.saveAll(requestPosts);
-//
-//        mockMvc.perform(MockMvcRequestBuilders.get("/posts?page=0&size=10")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                )
-//                .andExpect(MockMvcResultMatchers.status().isOk())
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.length()", Matchers.is(10)))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(30))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("호돌맨 제목 30"))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("반포자이 30"))
-//                .andDo(MockMvcResultHandlers.print());
-//    }
 
     @Test
     @DisplayName("글 제목 수정.")
