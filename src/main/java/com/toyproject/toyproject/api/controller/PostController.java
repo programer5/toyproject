@@ -1,5 +1,6 @@
 package com.toyproject.toyproject.api.controller;
 
+import com.toyproject.toyproject.api.config.data.UserSession;
 import com.toyproject.toyproject.api.request.PostCreate;
 import com.toyproject.toyproject.api.request.PostEdit;
 import com.toyproject.toyproject.api.request.PostSearch;
@@ -19,14 +20,16 @@ public class PostController {
 
     private final PostService postService;
 
-    @GetMapping("/test")
-    public String test() {
-        return "hello";
-    }
 
     @GetMapping("/foo")
-    public String foo() {
+    public String foo(UserSession userSession) {
+        log.info(">> {}", userSession.getName());
         return "foo";
+    }
+
+    @GetMapping("/bar")
+    public String bar() {
+        return "인증이 필요없는 페이지";
     }
 
     @PostMapping("/posts")
