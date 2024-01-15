@@ -1,9 +1,8 @@
 package com.toyproject.toyproject.api.controller;
 
-import com.toyproject.toyproject.api.domain.Member;
-import com.toyproject.toyproject.api.exception.InvalidSigninInformation;
-import com.toyproject.toyproject.api.repository.UserRepository;
 import com.toyproject.toyproject.api.request.Login;
+import com.toyproject.toyproject.api.response.SessionResponse;
+import com.toyproject.toyproject.api.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,16 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserRepository userRepository;
+    private final AuthService authService;
 
     @PostMapping("/auth/login")
-    public Member login(@RequestBody @Valid Login login) {
-        log.info(">>>>login={}", login);
-
-        Member user = userRepository.findByEmailAndPassword(login.getEmail(), login.getPassword())
-                .orElseThrow(InvalidSigninInformation::new);
-
-        return user;
+    public SessionResponse login(@RequestBody @Valid Login login) {
+        String accessToken = authService.signin(login);
+        return new SessionResponse(accessToken);
     }
 
 }
