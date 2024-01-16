@@ -28,8 +28,8 @@ public class PostController {
     }
 
     @GetMapping("/bar")
-    public String bar() {
-        return "인증이 필요없는 페이지";
+    public String bar(UserSession userSession) {
+        return "인증이 필요한 페이지";
     }
 
     @PostMapping("/posts")

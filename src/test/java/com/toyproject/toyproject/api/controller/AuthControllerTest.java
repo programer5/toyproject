@@ -2,6 +2,7 @@ package com.toyproject.toyproject.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.toyproject.toyproject.api.domain.Member;
+import com.toyproject.toyproject.api.domain.Session;
 import com.toyproject.toyproject.api.repository.SessionRepository;
 import com.toyproject.toyproject.api.repository.UserRepository;
 import com.toyproject.toyproject.api.request.Login;
@@ -126,6 +127,54 @@ class AuthControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken", Matchers.notNullValue()))
+                .andDo(MockMvcResultHandlers.print());
+
+    }
+
+    @Test
+    @DisplayName("로그인 후 권한이 필요한 페이지 접속한다 /foo")
+    void test4() throws Exception {
+
+        Member member = Member
+                .builder()
+                .email("neverdie4757@gmail.com")
+                .password("1234")
+                .name("정민서")
+                .build();
+
+        Session session = member.addSession();
+        userRepository.save(member);
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.get("/foo")
+                        .header("Authorization", session.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+
+    }
+
+    @Test
+    @DisplayName("로그인 후 검증되지 않은 세션값으로 권한이 필요한 페이지에 접속할 수 없다.")
+    void test5() throws Exception {
+
+        Member member = Member
+                .builder()
+                .email("neverdie4757@gmail.com")
+                .password("1234")
+                .name("정민서")
+                .build();
+
+        Session session = member.addSession();
+        userRepository.save(member);
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.get("/foo")
+                        .header("Authorization", session.getAccessToken() + "-other")
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isUnauthorized())
                 .andDo(MockMvcResultHandlers.print());
 
     }
