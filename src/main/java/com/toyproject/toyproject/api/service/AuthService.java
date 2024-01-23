@@ -1,7 +1,6 @@
 package com.toyproject.toyproject.api.service;
 
 import com.toyproject.toyproject.api.domain.Member;
-import com.toyproject.toyproject.api.domain.Session;
 import com.toyproject.toyproject.api.exception.InvalidSigninInformation;
 import com.toyproject.toyproject.api.repository.UserRepository;
 import com.toyproject.toyproject.api.request.Login;
@@ -18,14 +17,12 @@ public class AuthService {
     private final UserRepository userRepository;
 
     @Transactional
-    public String signin(Login login) {
+    public Long signin(Login login) {
 
         Member user = userRepository.findByEmailAndPassword(login.getEmail(), login.getPassword())
                 .orElseThrow(InvalidSigninInformation::new);
 
-        Session session = user.addSession();
-
-        return session.getAccessToken();
+        return user.getId();
     }
 
 }

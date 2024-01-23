@@ -1,18 +1,19 @@
 package com.toyproject.toyproject.api.controller;
 
 import com.toyproject.toyproject.api.request.Login;
+import com.toyproject.toyproject.api.response.SessionResponse;
 import com.toyproject.toyproject.api.service.AuthService;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Duration;
+import javax.crypto.SecretKey;
+import java.util.Base64;
 
 @Slf4j
 @RestController
@@ -20,23 +21,19 @@ import java.time.Duration;
 public class AuthController {
 
     private final AuthService authService;
+    private static final String KEY = "fgIBqD11TOyi9YSHqZ8Pzt7EndLGo5W10PC6GgiB5vs=";
 
     @PostMapping("/auth/login")
-    public ResponseEntity<Object> login(@RequestBody @Valid Login login) {
-        String accessToken = authService.signin(login);
-        ResponseCookie cookie = ResponseCookie.from("SESSION", accessToken)
-                .domain("localhost") // todo 서버 환경에 따른 분리 필요
-                .path("/")
-                .httpOnly(true)
-                .secure(false)
-                .maxAge(Duration.ofDays(30))
-                .sameSite("Strict")
-                .build();
+    public SessionResponse login(@RequestBody @Valid Login login) {
+        Long userId = authService.signin(login);
 
-        log.info(">>>>>>> cookie={}", cookie.toString());
+        SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(KEY));
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
+        String jws = Jwts.builder()
+                .subject(String.valueOf(userId))
+                .signWith(key)
+                .compact();
+
+        return new SessionResponse(jws);
     }
-
 }
