@@ -21,3 +21,6 @@ spring:
       pageable:
         one-indexed-parameters: true
         default-page-size: 5
+
+hodolman:
+  hello: "fgIBqD11TOyi9YSHqZ8Pzt7EndLGo5W10PC6GgiB5vs="
