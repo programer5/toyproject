@@ -7,7 +7,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -15,9 +14,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-
-import javax.crypto.SecretKey;
-import java.util.Base64;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,19 +30,16 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
 
-        log.info(">>>>> {}", appConfig.hello);
         String jws = webRequest.getHeader("Authorization");
 
         if (jws == null || jws.isEmpty()) {
             throw new Unauthorized();
         }
 
-        SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(appConfig.hello));
-
         try {
 
             Jws<Claims> claimsJws = Jwts.parser()
-                    .verifyWith(key)
+                    .verifyWith(appConfig.getJwtKey())
                     .build()
                     .parseSignedClaims(jws);
 

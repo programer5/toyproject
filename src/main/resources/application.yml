@@ -23,4 +23,4 @@ spring:
         default-page-size: 5
 
 hodolman:
-  hello: "fgIBqD11TOyi9YSHqZ8Pzt7EndLGo5W10PC6GgiB5vs="
+  jwt-key: "fgIBqD11TOyi9YSHqZ8Pzt7EndLGo5W10PC6GgiB5vs="
