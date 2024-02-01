@@ -1,1 +1,0 @@
-INSERT INTO "MEMBER" (name, email, password, created_at) VALUES ('정민서', 'neverdie4757@gmail.com', '1234', '2024-01-10 23:16:00')

@@ -2,6 +2,7 @@ package com.toyproject.toyproject.api.controller;
 
 import com.toyproject.toyproject.api.config.AppConfig;
 import com.toyproject.toyproject.api.request.Login;
+import com.toyproject.toyproject.api.request.Signup;
 import com.toyproject.toyproject.api.response.SessionResponse;
 import com.toyproject.toyproject.api.service.AuthService;
 import io.jsonwebtoken.Jwts;
@@ -33,5 +34,10 @@ public class AuthController {
                 .compact();
 
         return new SessionResponse(jws);
+    }
+
+    @PostMapping("/auth/signup")
+    public void signup(@RequestBody Signup signup) {
+        authService.signup(signup);
     }
 }
