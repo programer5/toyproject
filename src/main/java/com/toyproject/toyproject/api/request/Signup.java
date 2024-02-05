@@ -2,8 +2,10 @@ package com.toyproject.toyproject.api.request;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class Signup {
 
     private String name;

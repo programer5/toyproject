@@ -6,6 +6,7 @@ import com.toyproject.toyproject.api.domain.Session;
 import com.toyproject.toyproject.api.repository.SessionRepository;
 import com.toyproject.toyproject.api.repository.UserRepository;
 import com.toyproject.toyproject.api.request.Login;
+import com.toyproject.toyproject.api.request.Signup;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -175,6 +176,26 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isUnauthorized())
+                .andDo(MockMvcResultHandlers.print());
+
+    }
+
+    @Test
+    @DisplayName("회원가입")
+    void test6() throws Exception {
+
+        Signup signup = Signup.builder()
+                .name("정민서")
+                .password("1234")
+                .email("neverdie4757@gmail.com")
+                .build();
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
+                        .content(objectMapper.writeValueAsString(signup))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
 
     }
