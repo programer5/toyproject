@@ -1,8 +1,11 @@
 package com.toyproject.toyproject.api.service;
 
+import com.toyproject.toyproject.api.crypto.PasswordEncoder;
 import com.toyproject.toyproject.api.domain.Member;
 import com.toyproject.toyproject.api.exception.AlreadyExistsEmailException;
+import com.toyproject.toyproject.api.exception.InvalidSigninInformation;
 import com.toyproject.toyproject.api.repository.UserRepository;
+import com.toyproject.toyproject.api.request.Login;
 import com.toyproject.toyproject.api.request.Signup;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -65,6 +68,53 @@ class AuthServiceTest {
                 .build();
 
         Assertions.assertThrows(AlreadyExistsEmailException.class, () -> authService.signup(signup));
+    }
+
+    @Test
+    @DisplayName("로그인 성공")
+    void test3() {
+        PasswordEncoder encoder = new PasswordEncoder();
+        String encrypt = encoder.encrypt("1234");
+        Member member1 = Member.builder()
+                .email("neverdie4757@gmail.com")
+                .password(encrypt)
+                .name("짱돌맨")
+                .build();
+
+        Member member = userRepository.save(member1);
+
+        Login login = Login.builder()
+                .email("neverdie4757@gmail.com")
+                .password("1234")
+                .build();
+
+        Long memberId = authService.signin(login);
+
+        Assertions.assertNotNull(memberId);
+
+    }
+
+    @Test
+    @DisplayName("로그인 시 비밀번호 틀림")
+    void test4() {
+        PasswordEncoder encoder = new PasswordEncoder();
+        String encrypt = encoder.encrypt("1234");
+        Member member1 = Member.builder()
+                .email("neverdie4757@gmail.com")
+                .password(encrypt)
+                .name("짱돌맨")
+                .build();
+
+        Member member = userRepository.save(member1);
+
+        Login login = Login.builder()
+                .email("neverdie4757@gmail.com")
+                .password("5678")
+                .build();
+
+        Assertions.assertThrows(InvalidSigninInformation.class, () -> authService.signin(login));
+
+
     }
 
 }
