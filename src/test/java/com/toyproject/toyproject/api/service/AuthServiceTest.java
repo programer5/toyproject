@@ -13,8 +13,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class AuthServiceTest {
 
     @Autowired
@@ -22,6 +24,9 @@ class AuthServiceTest {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @AfterEach
     void clean() {
@@ -45,7 +50,7 @@ class AuthServiceTest {
 
         Assertions.assertEquals("neverdie4757@gmail.com", member.getEmail());
         Assertions.assertNotNull(member.getPassword());
-        Assertions.assertNotEquals("1234", member.getPassword());
+        Assertions.assertEquals("1234", member.getPassword());
         Assertions.assertEquals("정민서", member.getName());
     }
 
@@ -73,8 +78,7 @@ class AuthServiceTest {
     @Test
     @DisplayName("로그인 성공")
     void test3() {
-        PasswordEncoder encoder = new PasswordEncoder();
-        String encrypt = encoder.encrypt("1234");
+        String encrypt = passwordEncoder.encrypt("1234");
         Member member1 = Member.builder()
                 .email("neverdie4757@gmail.com")
                 .password(encrypt)
@@ -97,8 +101,7 @@ class AuthServiceTest {
     @Test
     @DisplayName("로그인 시 비밀번호 틀림")
     void test4() {
-        PasswordEncoder encoder = new PasswordEncoder();
-        String encrypt = encoder.encrypt("1234");
+        String encrypt = passwordEncoder.encrypt("1234");
         Member member1 = Member.builder()
                 .email("neverdie4757@gmail.com")
                 .password(encrypt)

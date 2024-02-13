@@ -20,6 +20,7 @@ import java.util.Optional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public Long signin(Login login) {
@@ -27,8 +28,7 @@ public class AuthService {
         Member member = userRepository.findByEmail(login.getEmail())
                 .orElseThrow(InvalidSigninInformation::new);
 
-        PasswordEncoder encoder = new PasswordEncoder();
-        boolean matches = encoder.matches(login.getPassword(), member.getPassword());
+        boolean matches = passwordEncoder.matches(login.getPassword(), member.getPassword());
 
         if (!matches) {
             throw new InvalidSigninInformation();
@@ -46,11 +46,9 @@ public class AuthService {
             throw new AlreadyExistsEmailException();
         }
 
-        PasswordEncoder encoder = new PasswordEncoder();
-
         Member member = Member.builder()
                 .name(signup.getName())
-                .password(encoder.encrypt(signup.getPassword()))
+                .password(passwordEncoder.encrypt(signup.getPassword()))
                 .email(signup.getEmail())
                 .build();
 
