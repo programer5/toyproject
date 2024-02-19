@@ -1,14 +1,15 @@
 package com.toyproject.toyproject.api.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -27,23 +28,11 @@ public class Member {
 
     private LocalDateTime createdAt;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "member")
-    private List<Session> sessions = new ArrayList<>();
-
-    public Session addSession() {
-        Session session = Session
-                .builder()
-                .member(this)
-                .build();
-        sessions.add(session);
-        return session;
-    }
-
     @Builder
-    public Member(String name, String email, String password) {
+    public Member(String name, String email, String password, LocalDateTime createdAt) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
     }
 }

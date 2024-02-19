@@ -1,6 +1,5 @@
 package com.toyproject.toyproject.api.controller;
 
-import com.toyproject.toyproject.api.config.data.UserSession;
 import com.toyproject.toyproject.api.request.PostCreate;
 import com.toyproject.toyproject.api.request.PostEdit;
 import com.toyproject.toyproject.api.request.PostSearch;
@@ -19,18 +18,6 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
-
-
-    @GetMapping("/foo")
-    public Long foo(UserSession userSession) {
-        log.info(">> {}", userSession.getId());
-        return userSession.getId();
-    }
-
-    @GetMapping("/bar")
-    public String bar(UserSession userSession) {
-        return "인증이 필요한 페이지";
-    }
 
     @PostMapping("/posts")
     public void post(@RequestBody @Valid PostCreate request) throws Exception {
