@@ -1,6 +1,5 @@
 package com.toyproject.toyproject.api.service;
 
-import com.toyproject.toyproject.api.crypto.PasswordEncoder;
 import com.toyproject.toyproject.api.domain.Member;
 import com.toyproject.toyproject.api.exception.AlreadyExistsEmailException;
 import com.toyproject.toyproject.api.repository.UserRepository;
@@ -18,7 +17,6 @@ import java.util.Optional;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public void signup(Signup signup) {
@@ -31,7 +29,6 @@ public class AuthService {
 
         Member member = Member.builder()
                 .name(signup.getName())
-                .password(passwordEncoder.encrypt(signup.getPassword()))
                 .email(signup.getEmail())
                 .build();
 

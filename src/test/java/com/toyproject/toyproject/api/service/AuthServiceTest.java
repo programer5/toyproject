@@ -1,6 +1,5 @@
 package com.toyproject.toyproject.api.service;
 
-import com.toyproject.toyproject.api.crypto.PasswordEncoder;
 import com.toyproject.toyproject.api.domain.Member;
 import com.toyproject.toyproject.api.exception.AlreadyExistsEmailException;
 import com.toyproject.toyproject.api.repository.UserRepository;
