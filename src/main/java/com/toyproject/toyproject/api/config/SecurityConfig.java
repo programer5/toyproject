@@ -13,7 +13,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 @EnableWebSecurity
@@ -21,13 +23,16 @@ public class SecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
         return http
                 .authorizeHttpRequests(request -> request.requestMatchers(
                         new AntPathRequestMatcher("/auth/login"),
                         new AntPathRequestMatcher("/auth/signup"),
                         new AntPathRequestMatcher("/h2-console/**")
-                        ).permitAll().anyRequest().authenticated())
+                        ).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/admin"))
+                            .access(new WebExpressionAuthorizationManager("hasRole('ADMIN') AND hasAuthority('WRITE')"))
+                        .anyRequest().authenticated())
                 .formLogin(f -> f.usernameParameter("username").passwordParameter("password").loginPage("/auth/login")
                         .loginProcessingUrl("/auth/login")
                         .defaultSuccessUrl("/"))
