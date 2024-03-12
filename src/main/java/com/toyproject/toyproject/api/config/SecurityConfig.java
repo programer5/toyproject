@@ -1,7 +1,13 @@
 package com.toyproject.toyproject.api.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.toyproject.toyproject.api.config.handler.Http401Handler;
+import com.toyproject.toyproject.api.config.handler.Http403Handler;
+import com.toyproject.toyproject.api.config.handler.LoginFailHandler;
 import com.toyproject.toyproject.api.domain.Member;
 import com.toyproject.toyproject.api.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,29 +19,39 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final ObjectMapper objectMapper;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(request -> request.requestMatchers(
                         new AntPathRequestMatcher("/auth/login"),
                         new AntPathRequestMatcher("/auth/signup"),
                         new AntPathRequestMatcher("/h2-console/**")
                         ).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/admin"))
-                            .access(new WebExpressionAuthorizationManager("hasRole('ADMIN') AND hasAuthority('WRITE')"))
+                        .requestMatchers(new AntPathRequestMatcher("/admin")).hasRole("ADMIN")
+                        .requestMatchers(new AntPathRequestMatcher("/user")).hasRole("USER")
                         .anyRequest().authenticated())
-                .formLogin(f -> f.usernameParameter("username").passwordParameter("password").loginPage("/auth/login")
+                .formLogin(f ->
+                        f.usernameParameter("username")
+                        .passwordParameter("password")
+                        .loginPage("/auth/login")
                         .loginProcessingUrl("/auth/login")
-                        .defaultSuccessUrl("/"))
+                        .defaultSuccessUrl("/")
+                        .failureHandler(new LoginFailHandler(objectMapper))
+                )
+                .exceptionHandling(e ->{
+                            e.accessDeniedHandler(new Http403Handler(objectMapper));
+                            e.authenticationEntryPoint(new Http401Handler(objectMapper));
+                        })
                 .rememberMe(rememberMe -> rememberMe.rememberMeParameter("remember")
                         .alwaysRemember(false)
                         .tokenValiditySeconds(2592000)
