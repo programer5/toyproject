@@ -1,6 +1,7 @@
 package com.toyproject.toyproject.api.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.toyproject.toyproject.api.config.filter.EmailPasswordAuthFilter;
 import com.toyproject.toyproject.api.config.handler.Http401Handler;
 import com.toyproject.toyproject.api.config.handler.Http403Handler;
 import com.toyproject.toyproject.api.config.handler.LoginFailHandler;
@@ -10,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,7 +23,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
 
 @Slf4j
 @Configuration
@@ -28,6 +36,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
 
     private final ObjectMapper objectMapper;
+    private final UserRepository userRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -40,14 +49,15 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/admin")).hasRole("ADMIN")
                         .requestMatchers(new AntPathRequestMatcher("/user")).hasRole("USER")
                         .anyRequest().authenticated())
-                .formLogin(f ->
-                        f.usernameParameter("username")
-                        .passwordParameter("password")
-                        .loginPage("/auth/login")
-                        .loginProcessingUrl("/auth/login")
-                        .defaultSuccessUrl("/")
-                        .failureHandler(new LoginFailHandler(objectMapper))
-                )
+                .addFilterBefore(emailPasswordAuthFilter(), UsernamePasswordAuthenticationFilter.class)
+//                .formLogin(f ->
+//                        f.usernameParameter("username")
+//                        .passwordParameter("password")
+//                        .loginPage("/auth/login")
+//                        .loginProcessingUrl("/auth/login")
+//                        .defaultSuccessUrl("/")
+//                        .failureHandler(new LoginFailHandler(objectMapper))
+//                )
                 .exceptionHandling(e ->{
                             e.accessDeniedHandler(new Http403Handler(objectMapper));
                             e.authenticationEntryPoint(new Http401Handler(objectMapper));
@@ -59,6 +69,29 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .csrf(AbstractHttpConfigurer::disable)
                 .build();
+    }
+
+    @Bean
+    public EmailPasswordAuthFilter emailPasswordAuthFilter() {
+        EmailPasswordAuthFilter filter = new EmailPasswordAuthFilter("/auth/login", objectMapper);
+        filter.setAuthenticationManager(authenticationManager());
+        filter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler("/"));
+        filter.setAuthenticationFailureHandler(new LoginFailHandler(objectMapper));
+        filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
+
+        SpringSessionRememberMeServices rememberMeServices = new SpringSessionRememberMeServices();
+        rememberMeServices.setAlwaysRemember(true);
+        rememberMeServices.setValiditySeconds(3600 * 24 * 30);
+        filter.setRememberMeServices(rememberMeServices);
+        return filter;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService(userRepository));
+        provider.setPasswordEncoder(passwordEncoder());
+        return new ProviderManager(provider);
     }
 
     @Bean
