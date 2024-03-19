@@ -5,6 +5,7 @@ import com.toyproject.toyproject.api.config.filter.EmailPasswordAuthFilter;
 import com.toyproject.toyproject.api.config.handler.Http401Handler;
 import com.toyproject.toyproject.api.config.handler.Http403Handler;
 import com.toyproject.toyproject.api.config.handler.LoginFailHandler;
+import com.toyproject.toyproject.api.config.handler.LoginSuccessHandler;
 import com.toyproject.toyproject.api.domain.Member;
 import com.toyproject.toyproject.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -44,13 +44,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(request -> request.requestMatchers(
-                        new AntPathRequestMatcher("/auth/login"),
-                        new AntPathRequestMatcher("/auth/signup"),
                         new AntPathRequestMatcher("/h2-console/**")
                         ).permitAll()
 //                        .requestMatchers(new AntPathRequestMatcher("/admin")).hasRole("ADMIN")
 //                        .requestMatchers(new AntPathRequestMatcher("/user")).hasRole("USER")
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .addFilterBefore(emailPasswordAuthFilter(), UsernamePasswordAuthenticationFilter.class)
 //                .formLogin(f ->
 //                        f.usernameParameter("username")
@@ -77,7 +75,7 @@ public class SecurityConfig {
     public EmailPasswordAuthFilter emailPasswordAuthFilter() {
         EmailPasswordAuthFilter filter = new EmailPasswordAuthFilter("/auth/login", objectMapper);
         filter.setAuthenticationManager(authenticationManager());
-        filter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler("/"));
+        filter.setAuthenticationSuccessHandler(new LoginSuccessHandler(objectMapper));
         filter.setAuthenticationFailureHandler(new LoginFailHandler(objectMapper));
         filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
 
