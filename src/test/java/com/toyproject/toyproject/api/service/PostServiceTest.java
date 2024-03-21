@@ -43,7 +43,7 @@ class PostServiceTest {
                 .build();
 
         //when
-        postService.write(postCreate);
+        postService.write(1, postCreate);
 
         //then
         Assertions.assertEquals(1L, postRepository.count());

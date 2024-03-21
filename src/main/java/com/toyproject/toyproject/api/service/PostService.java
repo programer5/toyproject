@@ -1,8 +1,11 @@
 package com.toyproject.toyproject.api.service;
 
+import com.toyproject.toyproject.api.domain.Member;
 import com.toyproject.toyproject.api.domain.Post;
 import com.toyproject.toyproject.api.exception.PostNotFound;
+import com.toyproject.toyproject.api.exception.UserNotFound;
 import com.toyproject.toyproject.api.repository.PostRepository;
+import com.toyproject.toyproject.api.repository.UserRepository;
 import com.toyproject.toyproject.api.request.PostCreate;
 import com.toyproject.toyproject.api.request.PostEdit;
 import com.toyproject.toyproject.api.request.PostSearch;
@@ -21,9 +24,11 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    public void write(PostCreate postCreate) {
-        postRepository.save(postCreate.toEntity());
+    public void write(Long userId, PostCreate postCreate) {
+        Member member = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+        postRepository.save(postCreate.toEntity(member));
     }
 
     public PostResponse get(Long id) {

@@ -1,5 +1,6 @@
 package com.toyproject.toyproject.api.request;
 
+import com.toyproject.toyproject.api.domain.Member;
 import com.toyproject.toyproject.api.domain.Post;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -22,8 +23,9 @@ public class PostCreate {
         this.content = content;
     }
 
-    public Post toEntity() {
+    public Post toEntity(Member member) {
         return Post.builder()
+                .member(member)
                 .title(this.title)
                 .content(this.content)
                 .build();
