@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.toyproject.toyproject.api.domain.Post;
 import com.toyproject.toyproject.api.repository.PostRepository;
 import com.toyproject.toyproject.api.request.PostCreate;
+import com.toyproject.toyproject.config.HodologMockUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.restdocs.request.RequestDocumentation;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
@@ -66,7 +66,7 @@ public class PostControllerDocTest {
     }
 
     @Test
-    @WithMockUser(username = "neverdie4757@gmail.com", roles = {"ADMIN"})
+    @HodologMockUser
     @DisplayName("글 등록")
     void test2() throws Exception {
 

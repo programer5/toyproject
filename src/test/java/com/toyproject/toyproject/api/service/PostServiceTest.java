@@ -1,8 +1,10 @@
 package com.toyproject.toyproject.api.service;
 
+import com.toyproject.toyproject.api.domain.Member;
 import com.toyproject.toyproject.api.domain.Post;
 import com.toyproject.toyproject.api.exception.PostNotFound;
 import com.toyproject.toyproject.api.repository.PostRepository;
+import com.toyproject.toyproject.api.repository.UserRepository;
 import com.toyproject.toyproject.api.request.PostCreate;
 import com.toyproject.toyproject.api.request.PostEdit;
 import com.toyproject.toyproject.api.request.PostSearch;
@@ -27,9 +29,13 @@ class PostServiceTest {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @BeforeEach
     void clean() {
         postRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -37,13 +43,21 @@ class PostServiceTest {
     void test1() {
         // given
 
+        Member member = Member.builder()
+                .name("호돌맨")
+                .email("neverdie4757@gmail.com")
+                .password("1234")
+                .build();
+
+        Member saveMember = userRepository.save(member);
+
         PostCreate postCreate = PostCreate.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
                 .build();
 
         //when
-        postService.write(1, postCreate);
+        postService.write(saveMember.getId(), postCreate);
 
         //then
         Assertions.assertEquals(1L, postRepository.count());
