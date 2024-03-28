@@ -1,9 +1,9 @@
 package com.toyproject.toyproject.api.controller;
 
 import com.toyproject.toyproject.api.config.UserPrincipal;
-import com.toyproject.toyproject.api.request.PostCreate;
-import com.toyproject.toyproject.api.request.PostEdit;
-import com.toyproject.toyproject.api.request.PostSearch;
+import com.toyproject.toyproject.api.request.post.PostCreate;
+import com.toyproject.toyproject.api.request.post.PostEdit;
+import com.toyproject.toyproject.api.request.post.PostSearch;
 import com.toyproject.toyproject.api.response.PostResponse;
 import com.toyproject.toyproject.api.service.PostService;
 import jakarta.validation.Valid;

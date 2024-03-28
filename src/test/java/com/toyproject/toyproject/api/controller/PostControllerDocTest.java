@@ -2,8 +2,8 @@ package com.toyproject.toyproject.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.toyproject.toyproject.api.domain.Post;
-import com.toyproject.toyproject.api.repository.PostRepository;
-import com.toyproject.toyproject.api.request.PostCreate;
+import com.toyproject.toyproject.api.repository.post.PostRepository;
+import com.toyproject.toyproject.api.request.post.PostCreate;
 import com.toyproject.toyproject.config.HodologMockUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.toyproject.toyproject.api.request;
+package com.toyproject.toyproject.api.request.post;
 
 import com.toyproject.toyproject.api.domain.Member;
 import com.toyproject.toyproject.api.domain.Post;

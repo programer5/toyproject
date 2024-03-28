@@ -2,7 +2,7 @@ package com.toyproject.toyproject.api.config;
 
 import com.toyproject.toyproject.api.domain.Post;
 import com.toyproject.toyproject.api.exception.PostNotFound;
-import com.toyproject.toyproject.api.repository.PostRepository;
+import com.toyproject.toyproject.api.repository.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.PermissionEvaluator;

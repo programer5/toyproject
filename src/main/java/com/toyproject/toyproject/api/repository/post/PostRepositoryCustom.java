@@ -1,7 +1,7 @@
-package com.toyproject.toyproject.api.repository;
+package com.toyproject.toyproject.api.repository.post;
 
 import com.toyproject.toyproject.api.domain.Post;
-import com.toyproject.toyproject.api.request.PostSearch;
+import com.toyproject.toyproject.api.request.post.PostSearch;
 
 import java.util.List;
 

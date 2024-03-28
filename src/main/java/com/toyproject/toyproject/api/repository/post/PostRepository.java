@@ -1,4 +1,4 @@
-package com.toyproject.toyproject.api.repository;
+package com.toyproject.toyproject.api.repository.post;
 
 import com.toyproject.toyproject.api.domain.Post;
 import org.springframework.data.jpa.repository.JpaRepository;

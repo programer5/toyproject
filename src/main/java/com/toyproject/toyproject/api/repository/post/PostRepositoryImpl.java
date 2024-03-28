@@ -1,9 +1,9 @@
-package com.toyproject.toyproject.api.repository;
+package com.toyproject.toyproject.api.repository.post;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.toyproject.toyproject.api.domain.Post;
 import com.toyproject.toyproject.api.domain.QPost;
-import com.toyproject.toyproject.api.request.PostSearch;
+import com.toyproject.toyproject.api.request.post.PostSearch;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

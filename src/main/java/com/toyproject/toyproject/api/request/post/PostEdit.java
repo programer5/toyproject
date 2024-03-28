@@ -1,4 +1,4 @@
-package com.toyproject.toyproject.api.request;
+package com.toyproject.toyproject.api.request.post;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;

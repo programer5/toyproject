@@ -1,6 +1,6 @@
 package com.toyproject.toyproject.api.config;
 
-import com.toyproject.toyproject.api.repository.PostRepository;
+import com.toyproject.toyproject.api.repository.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
